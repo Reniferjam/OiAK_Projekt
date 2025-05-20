@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iomanip>
 #include <algorithm>
+#include <vector>
 using namespace std;
 
 string insertZerosBetweenDigits(const string& input) {
@@ -177,24 +178,127 @@ string convertTo2iImag(double number) {
     return result;
 }
 
-int main() {
+string addInBase2i(const string& a, const string& b) {
+    int maxLen = max(a.length(), b.length());
+    vector<int> result(maxLen + 10, 0); // Dłuższy wektor dla przeniesień
+
+    // Uzupełnij krótsze zera
+    string aPadded = string(maxLen - a.length(), '0') + a;
+    string bPadded = string(maxLen - b.length(), '0') + b;
+
+    // Dodaj cyfry
+    for (int i = 0; i < maxLen; ++i) {
+        result[i] += (aPadded[maxLen - 1 - i] - '0') + (bPadded[maxLen - 1 - i] - '0');
+    }
+
+    // Popraw przeniesienia
+    for (int i = 0; i < result.size(); ++i) {
+        while (result[i] > 3) {
+            result[i] -= 4;
+            result[i + 2] -= 1;
+        }
+        while (result[i] < 0) {
+            result[i] += 4;
+            result[i + 2] += 1;
+        }
+    }
+
+    // Usuń wiodące zera
+    while (result.size() > 1 && result.back() == 0)
+        result.pop_back();
+
+    string sum;
+    for (int i = result.size() - 1; i >= 0; --i)
+        sum += to_string(result[i]);
+
+    return sum;
+}
+
+string subtractInBase2i(const string& a, const string& b) {
+    int maxLen = std::max(a.length(), b.length());
+    vector<int> result(maxLen + 10, 0); // Dłuższy wektor na przeniesienia
+
+    string aPadded = string(maxLen - a.length(), '0') + a;
+    string bPadded = string(maxLen - b.length(), '0') + b;
+
+    // Odejmij cyfry b od a
+    for (int i = 0; i < maxLen; ++i) {
+        result[i] += (aPadded[maxLen - 1 - i] - '0') - (bPadded[maxLen - 1 - i] - '0');
+    }
+
+    // Obsługa przeniesień
+    for (int i = 0; i < result.size(); ++i) {
+        while (result[i] < 0) {
+            result[i] += 4;
+            result[i + 2] += 1;  // "pożyczka" +1 dwie pozycje w lewo
+        }
+        while (result[i] > 3) {
+            result[i] -= 4;
+            result[i + 2] -= 1;
+        }
+    }
+
+    // Usuń wiodące zera
+    while (result.size() > 1 && result.back() == 0)
+        result.pop_back();
+
+    string diff;
+    for (int i = result.size() - 1; i >= 0; --i)
+        diff += to_string(result[i]);
+
+    return diff;
+}
+
+string newNumber() {
     double numberReal;
     cout << "Podaj  rzeczywista: ";
     cin >> numberReal;
 
-     string resultReal = convertTo2iReal(numberReal);
-    cout << "Czesc rzeczywista: " << resultReal << endl;
+    string resultReal = convertTo2iReal(numberReal);
 
     double numberImaginary;
     cout << "Podaj liczbe urojona: ";
     cin >> numberImaginary;
 
     string resultImaginary = convertTo2iImag(numberImaginary);
-    cout << "Czesc urojona: " << resultImaginary << endl;
-
-
 
     string wynik = polacz_liczby(resultReal, resultImaginary);
-    cout << wynik << endl;
+    cout << "Wprowadzona liczba: " + wynik << endl;
+    return wynik;
+}
+
+void subtractMenu(string num1,string num2) {
+    cout << "  " + num1 << endl;
+    cout << " -" + num2 << endl;
+
+    for (int i = 0; i < num2.length() + 2; ++i) {
+        cout << "-";
+    }
+    cout << endl;
+    cout << subtractInBase2i(num1, num2) << endl;
+    cout << endl;
+}
+
+void addMenu(string num1,string num2) {
+    cout << "  " + num1 << endl;
+    cout << " +" + num2 << endl;
+
+    for (int i = 0; i < num2.length() + 2; ++i) {
+        cout << "-";
+    }
+    cout << endl;
+    cout << addInBase2i(num1, num2) << endl;
+    cout << endl;
+}
+
+int main() {
+    // string num1 = newNumber();
+    // string num2 = newNumber();
+    string num1 = "1023";
+    string num2 = "1001";
+
+
+    subtractMenu(num1, num2);
+    addMenu(num1, num2);
     return 0;
 }
