@@ -25,7 +25,6 @@ string zamienZera(const string& urojona, const string& rzeczywista) {
 
     for (size_t i = 0; i < wynik.size(); ++i) {
         if (wynik[i] == '0') {
-            // Szukamy kolejnej cyfry z rzeczywistej
             while (idxRzeczywista < rzeczywista.size() && !isdigit(rzeczywista[idxRzeczywista])) {
                 ++idxRzeczywista;
             }
@@ -56,7 +55,6 @@ string polacz_liczby(const string& str1, const string& str2) {
 
     int max_int_len = max(integer_part1.length(), integer_part2.length());
 
-    // Uzupełnij część całkowitą zerami
     integer_part1.insert(0, max_int_len - integer_part1.length(), '0');
     integer_part2.insert(0, max_int_len - integer_part2.length(), '0');
 
@@ -113,7 +111,6 @@ string convertTo2iReal(double number) {
         int digit = static_cast<int>(floor(fracPart));
         if (digit < 0) digit += 4;
 
-        // Add zero between digits if more digits are needed
         fractionalResult = ".0" + to_string(digit);
     }
 
@@ -182,16 +179,13 @@ string addInBase2i(const string& a, const string& b) {
     int maxLen = max(a.length(), b.length());
     vector<int> result(maxLen + 10, 0); // Dłuższy wektor dla przeniesień
 
-    // Uzupełnij krótsze zera
     string aPadded = string(maxLen - a.length(), '0') + a;
     string bPadded = string(maxLen - b.length(), '0') + b;
 
-    // Dodaj cyfry
     for (int i = 0; i < maxLen; ++i) {
         result[i] += (aPadded[maxLen - 1 - i] - '0') + (bPadded[maxLen - 1 - i] - '0');
     }
 
-    // Popraw przeniesienia
     for (int i = 0; i < result.size(); ++i) {
         while (result[i] > 3) {
             result[i] -= 4;
@@ -203,7 +197,6 @@ string addInBase2i(const string& a, const string& b) {
         }
     }
 
-    // Usuń wiodące zera
     while (result.size() > 1 && result.back() == 0)
         result.pop_back();
 
@@ -221,16 +214,14 @@ string subtractInBase2i(const string& a, const string& b) {
     string aPadded = string(maxLen - a.length(), '0') + a;
     string bPadded = string(maxLen - b.length(), '0') + b;
 
-    // Odejmij cyfry b od a
     for (int i = 0; i < maxLen; ++i) {
         result[i] += (aPadded[maxLen - 1 - i] - '0') - (bPadded[maxLen - 1 - i] - '0');
     }
 
-    // Obsługa przeniesień
     for (int i = 0; i < result.size(); ++i) {
         while (result[i] < 0) {
             result[i] += 4;
-            result[i + 2] += 1;  // "pożyczka" +1 dwie pozycje w lewo
+            result[i + 2] += 1;
         }
         while (result[i] > 3) {
             result[i] -= 4;
@@ -238,7 +229,6 @@ string subtractInBase2i(const string& a, const string& b) {
         }
     }
 
-    // Usuń wiodące zera
     while (result.size() > 1 && result.back() == 0)
         result.pop_back();
 
@@ -267,6 +257,53 @@ string newNumber() {
     return wynik;
 }
 
+vector<int> fromString(const string& s) {
+    vector<int> digits;
+    for (int i = s.size() - 1; i >= 0; --i)
+        digits.push_back(s[i] - '0');
+    return digits;
+}
+
+string toString(const vector<int>& digits) {
+    string s;
+    bool leading = true;
+    for (int i = digits.size() - 1; i >= 0; --i) {
+        if (leading && digits[i] == 0) continue;
+        leading = false;
+        s += (char)(digits[i] + '0');
+    }
+    return s.empty() ? "0" : s;
+}
+
+void normalize(vector<int>& digits) {
+    for (size_t i = 0; i < digits.size(); ++i) {
+        while (digits[i] > 3) {
+            digits[i] -= 4;
+            if (i + 2 >= digits.size()) digits.resize(i + 3, 0);
+            digits[i + 2] -= 1;
+        }
+        while (digits[i] < 0) {
+            digits[i] += 4;
+            if (i + 2 >= digits.size()) digits.resize(i + 3, 0);
+            digits[i + 2] += 1;
+        }
+    }
+}
+
+vector<int> multiply2i(const vector<int>& a, const vector<int>& b) {
+    vector<int> result(a.size() + b.size(), 0);
+
+    for (size_t i = 0; i < b.size(); ++i) {
+        int digitB = b[i];
+        for (size_t j = 0; j < a.size(); ++j) {
+            result[i + j] += digitB * a[j];
+        }
+    }
+
+    normalize(result);
+    return result;
+}
+
 void subtractMenu(string num1,string num2) {
     cout << "  " + num1 << endl;
     cout << " -" + num2 << endl;
@@ -291,14 +328,33 @@ void addMenu(string num1,string num2) {
     cout << endl;
 }
 
+void multiplyMenu(string num1,string num2) {
+    cout << "  " + num1 << endl;
+    cout << " *" + num2 << endl;
+
+    vector<int> a = fromString(num1);
+    vector<int> b = fromString(num2);
+
+    vector<int> result = multiply2i(a, b);
+
+    for (int i = 0; i < num2.length() + 2; ++i) {
+        cout << "-";
+    }
+    cout << endl;
+    cout << toString(result) << endl;
+    cout << endl;
+}
+
 int main() {
     // string num1 = newNumber();
     // string num2 = newNumber();
-    string num1 = "1023";
-    string num2 = "1001";
+    string num1 = "11201";
+    string num2 = "20121";
 
 
     subtractMenu(num1, num2);
     addMenu(num1, num2);
+
+    multiplyMenu(num1, num2);
     return 0;
 }
