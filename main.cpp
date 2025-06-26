@@ -345,16 +345,61 @@ void multiplyMenu(string num1,string num2) {
     cout << endl;
 }
 
+void menu() {
+    int x = 0;
+    string num1;
+    string num2;
+    string liczba;
+    while (true) {
+        cout << endl;
+        cout << "Menu konwersji 2i" << endl;
+        cout << "1.Konwersja liczby na system 2i" << endl;
+        cout << "2.Dodawanie w systemie 2i" << endl;
+        cout << "3.Odejmowanie w systemie 2i" << endl;
+        cout << "4.Mnozenie w systemie 2i" << endl;
+        cin >> x;
+        switch (x) {
+            case 1:
+                 liczba = newNumber();
+            break;
+            case 2:
+
+                cout << "Podaj pierwsza liczbe: ";
+                cin >> num1;
+                cout << "Podaj druga liczbe: ";
+                cin >> num2;
+                addMenu(num1, num2);
+            break;
+            case 3:
+                cout << "Podaj pierwsza liczbe: ";
+                cin >> num1;
+                cout << "Podaj druga liczbe: ";
+                cin >> num2;
+                subtractMenu(num1, num2);
+            break;
+            case 4:
+                cout << "Podaj pierwsza liczbe: ";
+                cin >> num1;
+                cout << "Podaj druga liczbe: ";
+                cin >> num2;
+                multiplyMenu(num1, num2);
+            break;
+            default:
+                return;
+        }
+    }
+}
 int main() {
     // string num1 = newNumber();
     // string num2 = newNumber();
-    string num1 = "11201";
-    string num2 = "20121";
+    // string num1 = "11201";
+    // string num2 = "20121";
+    //
+    // subtractMenu(num1, num2);
+    // addMenu(num1, num2);
+    //
+    // multiplyMenu(num1, num2);
 
-
-    subtractMenu(num1, num2);
-    addMenu(num1, num2);
-
-    multiplyMenu(num1, num2);
+    menu();
     return 0;
 }
